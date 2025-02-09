@@ -3,10 +3,8 @@ services:
     image: nginx:latest
     volumes:
       - ./html:/usr/share/nginx/html
-    ports:
-      - "8080:80"
+    expose:
+      - "80:8080"
     environment:
       NGINX_HOST: localhost
       NGINX_PORT: 80
-  
-

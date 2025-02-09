@@ -23,8 +23,13 @@ class DockerManager:
             self.services = self.config.get('services', {})
             self.load_balancers = self.config.get('load_balancers', {})
 
-    def up(self, service_name: str = None) -> None:
-        """Start services defined in the configuration with scaling support"""
+    def up(self, service_name: str = None, rebuild: bool = False) -> None:
+        """Start services defined in the configuration with scaling support
+        
+        Args:
+            service_name: Optional name of specific service to start
+            rebuild: If True, force rebuild/pull of images before starting
+        """
         services_to_start = {service_name: self.services[service_name]} if service_name else self.services
 
         # Create a custom network if it doesn't exist
@@ -71,6 +76,11 @@ class DockerManager:
                     instance_name = f"{name}_{instance + 1}" if scale > 1 else name
 
                     try:
+                        # Pull/rebuild image if requested
+                        if rebuild:
+                            click.echo(f"Pulling latest image for {name}: {image}")
+                            self.client.images.pull(image)
+
                         container = self.client.containers.run(
                             image=image,
                             name=instance_name,
@@ -214,12 +224,13 @@ def main():
 
 @main.command()
 @click.option('--file', '-f', default='orca.yml', help='Path to Orca configuration file')
+@click.option('--rebuild', is_flag=True, help='Force rebuild/pull of images before starting')
 @click.argument('service', required=False)
-def up(file: str, service: str):
+def up(file: str, service: str = None, rebuild: bool = False):
     """Start services"""
     manager = DockerManager()
     manager.load_config(file)
-    manager.up(service)
+    manager.up(service, rebuild)
 
 @main.command()
 @click.argument('service', required=False)
