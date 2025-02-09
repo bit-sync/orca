@@ -1,0 +1,30 @@
+services:
+  web:
+    image: nginx:latest
+    scale: 3  # Run 3 instances
+    expose:
+      - "80"  # Only expose port internally
+    volumes:
+      - ./html:/usr/share/nginx/html
+    environment:
+      NGINX_HOST: localhost
+      NGINX_PORT: 80
+
+  redis:
+    image: redis:latest
+    scale: 1
+    expose:
+      - "6379"  # Only expose Redis port internally
+
+load_balancers:
+  web_lb:
+    port: 8080  # The only externally exposed port
+    algorithm: round_robin
+    services:
+      - name: web
+        weight: 1
+    health_check:
+      path: /
+      interval: 5s
+      timeout: 3s
+      retries: 3

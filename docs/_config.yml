@@ -1,0 +1,22 @@
+title: Orca Documentation
+description: Documentation for Orca - A lightweight Docker orchestration tool
+theme: jekyll-theme-cayman
+
+# GitHub Pages settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /getting-started
+  - title: Configuration
+    url: /configuration
+  - title: Load Balancing
+    url: /load-balancing
+  - title: Examples
+    url: /examples
